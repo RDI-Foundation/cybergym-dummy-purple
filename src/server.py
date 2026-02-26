@@ -24,16 +24,16 @@ def main():
     # See: https://a2a-protocol.org/latest/tutorials/python/3-agent-skills-and-card/
     
     skill = AgentSkill(
-        id="",
-        name="",
-        description="",
-        tags=[],
+        id="poc",
+        name="PoC",
+        description="Attempts a CyberGym task.",
+        tags=["cybersecurity", "exploit", "ctf"],
         examples=[]
     )
 
     agent_card = AgentCard(
-        name="",
-        description="",
+        name="CyberGym Purple",
+        description="Dummy solver for the CyberGym benchmark.",
         url=args.card_url or f"http://{args.host}:{args.port}/",
         version='1.0.0',
         default_input_modes=['text'],
@@ -49,6 +49,8 @@ def main():
     server = A2AStarletteApplication(
         agent_card=agent_card,
         http_handler=request_handler,
+        # Need to receive big task files x_x
+        max_content_length=None,
     )
     uvicorn.run(server.build(), host=args.host, port=args.port)
 
