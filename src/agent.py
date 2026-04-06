@@ -47,10 +47,10 @@ class Agent:
                     if f.name and (f.name.endswith(".txt") or f.name.endswith(".md")):
                         print(raw.decode("utf-8", errors="replace"))
 
-        poc_bytes = b""
+        poc_bytes = b"hi from dummy agent\n"
 
-        # Test the validation workflow with an empty PoC file
-        print("Testing validation workflow with empty PoC...")
+        # Test the validation workflow with an dummy PoC file
+        print("Testing validation workflow with dummy PoC...")
         await updater.requires_input(updater.new_agent_message(parts=[
             Part(root=DataPart(data={"action": "test_vulnerable"})),
             Part(root=FilePart(
