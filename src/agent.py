@@ -3,7 +3,8 @@ import base64
 
 from a2a.server.tasks import TaskUpdater
 from a2a.types import DataPart, FilePart, FileWithBytes, Message, Part
-from a2a.utils import get_message_text
+from a2a.utils import get_message_text, new_agent_text_message
+
 from messenger import Messenger
 
 
@@ -33,19 +34,25 @@ class Agent:
             return
 
         # First call: green is sending the challenge files
+        file_parts = [part for part in message.parts if isinstance(part.root, FilePart)]
+
+        # No files means this isn't a real challenge (e.g. conformance test) — exit early
+        if not file_parts:
+            await updater.reject(new_agent_text_message("no challenge files received"))
+            return
+
         self._challenge_received = True
 
         print("Received challenge:", input_text)
 
         # Show brief info about received challenge files
-        for part in message.parts:
-            if isinstance(part.root, FilePart):
-                f = part.root.file
-                if isinstance(f, FileWithBytes):
-                    raw = base64.b64decode(f.bytes)
-                    print(f"  {f.name}: {len(raw)} bytes ({f.mime_type})")
-                    if f.name and (f.name.endswith(".txt") or f.name.endswith(".md")):
-                        print(raw.decode("utf-8", errors="replace"))
+        for part in file_parts:
+            f = part.root.file
+            if isinstance(f, FileWithBytes):
+                raw = base64.b64decode(f.bytes)
+                print(f"  {f.name}: {len(raw)} bytes ({f.mime_type})")
+                if f.name and (f.name.endswith(".txt") or f.name.endswith(".md")):
+                    print(raw.decode("utf-8", errors="replace"))
 
         poc_bytes = b"hi from dummy agent\n"
 
