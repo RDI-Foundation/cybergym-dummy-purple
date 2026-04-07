@@ -33,7 +33,7 @@ def main():
 
     agent_card = AgentCard(
         name="CyberGym Purple",
-        description="Dummy solver for the CyberGym benchmark.",
+        description="Dummy purple agent for the CyberGym benchmark.",
         url=args.card_url or f"http://{args.host}:{args.port}/",
         version='1.0.0',
         default_input_modes=['text'],
