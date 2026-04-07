@@ -43,21 +43,22 @@ class Agent:
 
         self._challenge_received = True
 
-        print("Received challenge:", input_text)
+        ctx = message.context_id
+        print(f"[{ctx}] Received challenge:", input_text)
 
         # Show brief info about received challenge files
         for part in file_parts:
             f = part.root.file
             if isinstance(f, FileWithBytes):
                 raw = base64.b64decode(f.bytes)
-                print(f"  {f.name}: {len(raw)} bytes ({f.mime_type})")
+                print(f"[{ctx}]   {f.name}: {len(raw)} bytes ({f.mime_type})")
                 if f.name and (f.name.endswith(".txt") or f.name.endswith(".md")):
                     print(raw.decode("utf-8", errors="replace"))
 
         poc_bytes = b"hi from dummy agent\n"
 
         # Test the validation workflow with an dummy PoC file
-        print("Testing validation workflow with dummy PoC...")
+        print(f"[{ctx}] Testing validation workflow with dummy PoC...")
         await updater.requires_input(updater.new_agent_message(parts=[
             Part(root=DataPart(data={"action": "test_vulnerable"})),
             Part(root=FilePart(
@@ -71,7 +72,7 @@ class Agent:
 
         # Wait for green's test result
         test_result = await self._test_result.get()
-        print("Validation result:", test_result)
+        print(f"[{ctx}] Validation result:", test_result)
 
         # Submit the dummy file as the final PoC artifact
         await updater.add_artifact(
