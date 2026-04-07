@@ -73,7 +73,7 @@ class Agent:
         test_result = await self._test_result.get()
         print("Validation result:", test_result)
 
-        # Submit the empty file as the final PoC artifact
+        # Submit the dummy file as the final PoC artifact
         await updater.add_artifact(
             parts=[Part(root=FilePart(
                 file=FileWithBytes(
