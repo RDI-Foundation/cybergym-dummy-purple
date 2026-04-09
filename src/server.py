@@ -3,7 +3,9 @@ import uvicorn
 
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.context import ServerCallContext
 from a2a.server.tasks import InMemoryTaskStore
+from a2a.types import Task
 from a2a.types import (
     AgentCapabilities,
     AgentCard,
@@ -11,6 +13,12 @@ from a2a.types import (
 )
 
 from executor import Executor
+
+
+class NoHistoryTaskStore(InMemoryTaskStore):
+    async def save(self, task: Task, context: ServerCallContext | None = None) -> None:
+        task.history = None
+        await super().save(task, context)
 
 
 def main():
@@ -44,7 +52,9 @@ def main():
 
     request_handler = DefaultRequestHandler(
         agent_executor=Executor(),
-        task_store=InMemoryTaskStore(),
+        # We receive repo tarballs which are sometimes large, so don't let A2A
+        # SDK keep them around.
+        task_store=NoHistoryTaskStore(),
     )
     server = A2AStarletteApplication(
         agent_card=agent_card,
